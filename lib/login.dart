@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Login extends StatefulWidget {
   static String tag = 'login-page';
@@ -7,6 +9,11 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+
+String _email;
+String _password;
+
+ 
   @override
   Widget build(BuildContext context) {
     final logo = Hero(
@@ -17,7 +24,7 @@ class _LoginState extends State<Login> {
         child: Image.asset('assets/planit.png'),
       ),
     );
-
+    
     final email = TextFormField(
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
@@ -27,6 +34,7 @@ class _LoginState extends State<Login> {
         contentPadding: EdgeInsets.fromLTRB(20.0, 14.0, 20.0, 14.0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
       ),
+   
     );
 
     final password = TextFormField(
@@ -38,17 +46,21 @@ class _LoginState extends State<Login> {
         contentPadding: EdgeInsets.fromLTRB(20.0, 14.0, 20.0, 14.0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
       ),
+            
     );
 
     final loginButton = RaisedButton(
-          padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          splashColor: Colors.lightBlueAccent[200],
-          onPressed: () {
-            Navigator.of(context).pushNamed('/home');
-          },
-          elevation: 4.0,
-          color: Colors.lightBlueAccent,
-          shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+        padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+        splashColor: Colors.lightBlueAccent[200],
+        onPressed: () {
+          
+          print("email:  senha:");
+          /*_handleEmailSignIn(_email, _password); */
+        /* Navigator.of(context).pushNamed('/home'); */
+        },
+        elevation: 4.0,
+        color: Colors.lightBlueAccent,
+        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
           child: Text('LOGIN', style: TextStyle(color: Colors.white)),
           
         );
@@ -81,4 +93,27 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+}
+
+final GoogleSignIn _googleSignIn = GoogleSignIn();
+final FirebaseAuth _auth = FirebaseAuth.instance;
+
+Future<FirebaseUser> _handleGoogleSignIn() async {
+  GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+  GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+  FirebaseUser user = await _auth.signInWithGoogle(
+    accessToken: googleAuth.accessToken,
+    idToken: googleAuth.idToken,
+  );
+  print("signed in " + user.displayName);
+  return user;
+}
+
+Future<FirebaseUser> _handleEmailSignIn(String _email, String _password) async {
+    final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
+      email: _email, 
+      password: _password
+      );
+  print("signed in " + user.displayName);  
+  return user;
 }

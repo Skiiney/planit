@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'loader/color_loader.dart';
 
+
 class Home extends StatelessWidget {
   static String tag = 'home';
 
