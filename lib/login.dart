@@ -9,10 +9,17 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+ final formKey = GlobalKey<FormState>();
 
 String _email;
 String _password;
 
+void _validadeAndsave(){
+  final form = formKey.currentState;
+  if (form.validate()){
+    form.save();
+  }
+}
  
   @override
   Widget build(BuildContext context) {
@@ -25,7 +32,11 @@ String _password;
       ),
     );
     
-    final email = TextFormField(
+    final forms = Form(
+      key: formKey,
+      child: Column(
+        children: [
+          TextFormField(
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
       initialValue: '',
@@ -33,11 +44,13 @@ String _password;
         hintText: 'Email',
         contentPadding: EdgeInsets.fromLTRB(20.0, 14.0, 20.0, 14.0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+        
       ),
-   
-    );
-
-    final password = TextFormField(
+      validator: (value) => value.length < 6 ? 'Emais invalid' : null,
+      onSaved: (value) => _email = value
+    ),
+    SizedBox(height: 12.0),
+         TextFormField(
       autofocus: false,
       initialValue: '',
       obscureText: true,
@@ -46,15 +59,23 @@ String _password;
         contentPadding: EdgeInsets.fromLTRB(20.0, 14.0, 20.0, 14.0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
       ),
-            
+      validator: (value) => value.length < 6 ? 'Password too short.' : null,
+      onSaved: (value) => _password = value
+    )
+
+        ]
+      ),
     );
+
+    
 
     final loginButton = RaisedButton(
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         splashColor: Colors.lightBlueAccent[200],
         onPressed: () {
-          
-          print("email:  senha:");
+          _validadeAndsave();
+          print("email: $_email senha2: $_password");
+          _handleEmailSignIn(_email, _password);
           /*_handleEmailSignIn(_email, _password); */
         /* Navigator.of(context).pushNamed('/home'); */
         },
@@ -82,9 +103,7 @@ String _password;
           children: <Widget>[
             logo,
             SizedBox(height: 48.0),
-            email,
-            SizedBox(height: 9.0),
-            password,
+            forms,
             SizedBox(height: 9.0),
             loginButton,
             forgotLabel
