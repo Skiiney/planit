@@ -11,7 +11,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Initial',
       theme: ThemeData(
-        primarySwatch: Colors.lightBlue
+        primarySwatch: Colors.lightBlue,
+        fontFamily: 'Krub',
       ),
       routes: routes,
     );
