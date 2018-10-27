@@ -1,6 +1,13 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+Future<void> connection() async {
+final Firestore firestore = Firestore();
+  await firestore.settings(timestampsInSnapshotsEnabled: true);
+}
 
 class Login extends StatefulWidget {
   static String tag = 'login-page';
@@ -10,13 +17,14 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
-  String _nome;
+  final formregKey = GlobalKey<FormState>();
+  String _name;
   String _email;
   String _password;
   String _rpassword;
 
-void _validadeAndsave(){
-  final form = formKey.currentState;
+void _validadeAndsave(Key){
+  final form = Key.currentState;
   if (form.validate()){
     form.save();
   }
@@ -32,11 +40,11 @@ void _validadeAndsave(){
         
           // IMAGE BACKGROUND WITH TRANSPARENCY
 
-       /* image: DecorationImage(
-          colorFilter: ColorFilter.mode(Colors.white.withOpacity(0.1), BlendMode.dstATop),
-          image: AssetImage('assets/'),
+        image: DecorationImage(
+          colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.1), BlendMode.dstATop),
+          image: AssetImage('assets/back.jpg'),
           fit: BoxFit.cover
-        ) */
+        ) 
       ),
 
       child: Center(
@@ -48,13 +56,13 @@ void _validadeAndsave(){
               tag: 'hero',
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                radius: 78.0,
-                child: Image.asset('assets/planit.png'),
+                radius: 58.0,
+                child: Image.asset('assets/logo3.png'),
               ),
             ),
 
             Container(
-              //xpadding: EdgeInsets.only(top: 5.0),
+              padding: EdgeInsets.only(top: 10.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[ 
@@ -137,7 +145,7 @@ void _validadeAndsave(){
                       contentPadding: EdgeInsets.fromLTRB(20.0, 14.0, 20.0, 14.0),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
                     ),
-                    validator: (value) => value.contains('@') ? 'Emais invalid' : null,
+                    validator: (value) => value.contains('@') ? null : 'Email invalid',
                     onSaved: (value) => _email = value
                     ),
                   
@@ -165,9 +173,9 @@ void _validadeAndsave(){
               padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
               splashColor: Colors.lightBlueAccent[200],
               onPressed: () {
-                _validadeAndsave();
-                // print("email: $_email senha2: $_password");
-                _handleEmailSignIn(_email, _password);
+                _validadeAndsave(formKey);
+                _handleGoogleSignIn(context);
+                //_handleEmailSignIn(_email, _password, context); 
               },
               elevation: 4.0,
               color: Colors.lightBlueAccent,
@@ -213,6 +221,7 @@ void _validadeAndsave(){
             SizedBox(height: 55.0),
             
             Form(
+              key: formregKey,
               child: Column(
                 children: [
                   
@@ -225,7 +234,7 @@ void _validadeAndsave(){
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
                     ),
                     validator: (value) => value.length < 3 ? 'Name invalid' : null,
-                    onSaved: (value) => _nome = value
+                    onSaved: (value) => _name = value
                     ),
 
                   SizedBox(height: 12.0),  
@@ -239,7 +248,7 @@ void _validadeAndsave(){
                       contentPadding: EdgeInsets.fromLTRB(20.0, 14.0, 20.0, 14.0),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
                     ),
-                    validator: (value) => value.contains('@') ? 'Emais invalid' : null,
+                    validator: (value) => value.contains('@') ? null : 'Email invalid',
                     onSaved: (value) => _email = value
                     ),
                   
@@ -283,12 +292,14 @@ void _validadeAndsave(){
               padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
               splashColor: Colors.lightBlueAccent[200],
               onPressed: () {
-                              
+                _validadeAndsave(formregKey);
+
+                _handleRegister(_name, _email, _password, context);              
               },
               elevation: 4.0,
               color: Colors.lightBlueAccent,
               shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
-              child: Text('Sign Up', style: TextStyle(color: Colors.white)),
+              child: Text('SIGN UP', style: TextStyle(color: Colors.white)),
             ),
 
           ]
@@ -302,7 +313,7 @@ void _validadeAndsave(){
     _controller.animateToPage(
       1,
       duration: Duration(milliseconds: 800),
-      curve: Curves.bounceOut,
+      curve: Curves.fastOutSlowIn,
     );
   }
 
@@ -311,7 +322,7 @@ void _validadeAndsave(){
     _controller.animateToPage(
       2,
       duration: Duration(milliseconds: 800),
-      curve: Curves.bounceOut,
+      curve: Curves.fastOutSlowIn,
     );
   }
 
@@ -332,25 +343,60 @@ void _validadeAndsave(){
   }
 }
 
+final CollectionReference collectionReference = Firestore.instance.collection('users');
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
-Future<FirebaseUser> _handleGoogleSignIn() async {
-  GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-  GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-  FirebaseUser user = await _auth.signInWithGoogle(
+Future<FirebaseUser> _handleGoogleSignIn(context) async {
+  try {
+    GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    FirebaseUser user = await _auth.signInWithGoogle(
     accessToken: googleAuth.accessToken,
     idToken: googleAuth.idToken,
   );
   print("signed in " + user.displayName);
+  collectionReference.document('${user.uid}').get().then((datasnapshot){
+    if(!datasnapshot.exists){
+      collectionReference.document('${user.uid}')
+   .setData({'email': '${user.email}', 'name': '${user.displayName}', 'groups': [''], 'photoID': '${user.photoUrl}'});
+    }
+  });
+  Navigator.of(context).pushNamed('/home');
   return user;
+  } catch (e) {
+    print('Error: $e');
+    return null;
+  }
 }
 
-Future<FirebaseUser> _handleEmailSignIn(String _email, String _password) async {
-    final FirebaseUser user = await _auth.signInWithEmailAndPassword(
+Future<FirebaseUser> _handleEmailSignIn(String _email, String _password, context) async {
+    try {
+      final FirebaseUser user = await _auth.signInWithEmailAndPassword(
       email: _email, 
       password: _password
       );
-  print("signed in " + user.displayName);  
-  return user;
+      print("signed in " + user.email);
+      Navigator.of(context).pushNamed('/home');
+      return user;  
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
+}
+
+Future<FirebaseUser> _handleRegister(String _name, String _email, String _password, context) async{
+    try {
+      final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
+      email: _email,
+      password: _password
+      );
+      Firestore.instance.collection('users').document()
+        .setData({'email': '$_email', 'name': '$_name', 'groups': [''], 'photoID': ''});
+      Navigator.of(context).pushNamed('/home');
+      return user;
+    } catch (e) {
+    print('Error: $e');
+    return null;
+    }
 }
