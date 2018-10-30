@@ -38,25 +38,25 @@ void _validadeAndsave(Key){
           colors: [Colors.blue, Colors.lightBlueAccent]
         ),
         
-          // IMAGE BACKGROUND WITH TRANSPARENCY
+          // BACKGROUND IMAGE WITH TRANSPARENCY
 
-        image: DecorationImage(
+          image: DecorationImage(
           colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.1), BlendMode.dstATop),
           image: AssetImage('assets/back.jpg'),
           fit: BoxFit.cover
-        ) 
+        )  
       ),
 
       child: Center(
         child: ListView(
           shrinkWrap: true,
-          padding: EdgeInsets.only(left: 25.0, right: 25.0),
+          padding: EdgeInsets.only(left: 26.0, right: 26.0),
           children: <Widget>[
             Hero(
               tag: 'hero',
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                radius: 58.0,
+                radius: 48.0,
                 child: Image.asset('assets/logo3.png'),
               ),
             ),
@@ -110,10 +110,19 @@ void _validadeAndsave(Key){
 
   Widget loginPage(){
     return Container(
+     /* decoration: BoxDecoration(
+        color: Colors.white,
+        image: DecorationImage(
+          colorFilter: ColorFilter.mode(
+              Colors.black.withOpacity(0.1), BlendMode.dstATop),
+          image: AssetImage('assets/back.jpg'),
+          fit: BoxFit.cover,
+        ),
+      ), */
       child:Center(
         child: ListView(
           shrinkWrap: true,
-          padding: EdgeInsets.only(left: 24.0, right: 24.0),
+          padding: EdgeInsets.only(left: 26.0, right: 26.0),
           children: <Widget>[
             Container(
               child: Row(
@@ -149,7 +158,7 @@ void _validadeAndsave(Key){
                     onSaved: (value) => _email = value
                     ),
                   
-                  SizedBox(height: 12.0),
+                  SizedBox(height: 10.0),
           
                   TextFormField(
                     autofocus: false,
@@ -167,29 +176,123 @@ void _validadeAndsave(Key){
                 ),
               ),
 
-            SizedBox(height: 9.0),
+            Row(
+            mainAxisAlignment: MainAxisAlignment.end,  
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(top: 4.0, bottom: 8.0),
+                  child: FlatButton(
+                    child: Text(
+                    'Forgot password?',
+                    style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.end,
+                    ),
+                    onPressed: () {},
+                  )
+                )
+              ]
+            ),
 
             RaisedButton(
               padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
               splashColor: Colors.lightBlueAccent[200],
               onPressed: () {
                 _validadeAndsave(formKey);
-                _handleGoogleSignIn(context);
+                _handleEmailSignIn(_name, _password, context);
                 //_handleEmailSignIn(_email, _password, context); 
               },
               elevation: 4.0,
               color: Colors.lightBlueAccent,
               shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
-              child: Text('LOGIN', style: TextStyle(color: Colors.white)),
+              child: Text('LOGIN', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
 
-            FlatButton(
-              child: Text(
-              'Forgot password?',
-              style: TextStyle(color: Colors.black54),
+            SizedBox(height: 22.0),
+
+            Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[ 
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(border: Border.all(width: 0.30)),
+                    )
+                  ),
+                  Text(
+                    'OR CONNECT WITH',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                      fontSize: 15.0
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(border: Border.all(width: 0.30)),
+                    )
+                  )
+                ]
+              ),
             ),
-            onPressed: () {},
-            ),
+
+            Container(
+              margin: EdgeInsets.only(top:15.0),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: RaisedButton(
+                      padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                      splashColor: Colors.lightBlueAccent[200],
+                      onPressed: () {
+                        _handleGoogleSignIn(context);
+                      },
+                      elevation: 4.0,
+                      color: Color(0Xffdb3236),
+                      shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
+                        children: <Widget>[
+                          Icon( const IconData(0xea88,
+                                                fontFamily: 'IcoMoon'),
+                                            color: Colors.white,
+                                            size: 15.0,),
+                          Text('GOOGLE', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
+                        ]
+                      )
+                      )
+                    ),
+
+                  SizedBox(
+                    width: 10.0,
+                  ),
+
+                  Expanded(
+                    child: RaisedButton(
+                      padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                      splashColor: Colors.lightBlueAccent[200],
+                      onPressed: () {
+                        _handleGoogleSignIn(context);
+                      },
+                      elevation: 4.0,
+                      color: Color(0Xff3B5998),
+                      shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
+                        children: <Widget>[
+                          Icon( const IconData(0xea90,
+                                                fontFamily: 'IcoMoon'),
+                                            color: Colors.white,
+                                            size: 15.0,),
+                          Text('FACEBOOK', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
+                        ]
+                      )
+                    )
+                  )
+                ],
+              )
+            )
           ],
         ),
       ),
@@ -332,6 +435,13 @@ void _validadeAndsave(Key){
   Widget build(BuildContext context) {
     return  Scaffold(
       body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+          colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.1), BlendMode.dstATop),
+          image: AssetImage('assets/back.jpg'),
+          fit: BoxFit.cover
+          ) 
+        ),
         child: PageView(
           controller: _controller,
           physics: AlwaysScrollableScrollPhysics(),
