@@ -37,14 +37,8 @@ void _validadeAndsave(Key){
         gradient: LinearGradient(
           colors: [Colors.blue, Colors.lightBlueAccent]
         ),
-        
-          // BACKGROUND IMAGE WITH TRANSPARENCY
-
-          image: DecorationImage(
-          colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.1), BlendMode.dstATop),
-          image: AssetImage('assets/back.jpg'),
-          fit: BoxFit.cover
-        )  
+        backgroundBlendMode: BlendMode.multiply
+          
       ),
 
       child: Center(
@@ -110,15 +104,6 @@ void _validadeAndsave(Key){
 
   Widget loginPage(){
     return Container(
-     /* decoration: BoxDecoration(
-        color: Colors.white,
-        image: DecorationImage(
-          colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.1), BlendMode.dstATop),
-          image: AssetImage('assets/back.jpg'),
-          fit: BoxFit.cover,
-        ),
-      ), */
       child:Center(
         child: ListView(
           shrinkWrap: true,
@@ -199,7 +184,6 @@ void _validadeAndsave(Key){
               onPressed: () {
                 _validadeAndsave(formKey);
                 _handleEmailSignIn(_name, _password, context);
-                //_handleEmailSignIn(_email, _password, context); 
               },
               elevation: 4.0,
               color: Colors.lightBlueAccent,
@@ -273,7 +257,7 @@ void _validadeAndsave(Key){
                       padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                       splashColor: Colors.lightBlueAccent[200],
                       onPressed: () {
-                        _handleGoogleSignIn(context);
+                      
                       },
                       elevation: 4.0,
                       color: Color(0Xff3B5998),
